@@ -51,11 +51,11 @@ function time_elapsed($secs) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <title>Redis Stats</title>
-<style type="text/css">
+<style>
 html {
 	font-size: 16px;
 	line-height: 1.4;
@@ -72,10 +72,10 @@ body {
 }
 
 h1 {
-	background:  #8892BF;
+	background: #8892BF;
 	border-bottom: 4px solid #4F5B93;
 	padding: 0.25em;
-	margin-top:0;
+	margin-top: 0;
 	color: #22242F;
 }
 
@@ -84,7 +84,7 @@ form {
 }
 
 .wrapper {
-	text-align:center;
+	text-align: center;
 }
 
 .grid {
@@ -121,11 +121,11 @@ form {
 }
 
 .box h2 {
-	margin:0 0 0.5em;
+	margin: 0 0 0.5em;
 	padding: 0.25em;
 	font-size: 1.15em;
 	background: #E2E4EF;
-	border-top:  2px solid #4F5B93;
+	border-top: 2px solid #4F5B93;
 	border-bottom: 1px solid #C4C9DF;
 }
 
@@ -134,7 +134,7 @@ form {
 	font-size: 42px;
 }
 
-.details { margin 1em 0; }
+.details { margin: 1em 0; }
 
 .detail {
 	text-align: left;
@@ -357,7 +357,7 @@ window.createPie = createPie;
 <body>
 <div class="wrapper">
 <h1>Redis Stats</h1>
-<form action="" method="get">
+<form method="get">
 <label for="server">Server:</label>
 <select onchange="this.form.submit()" id="server" name="s">
 <?php foreach ($servers as $i => $serv): ?>
