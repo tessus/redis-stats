@@ -2,6 +2,7 @@
 // CONFIG
 $servers = array(
 	array('Local', '127.0.0.1', 6379),
+	array('Local pwd', '127.0.0.1', 6379, 'password_here'),
 );
 // END CONFIG
 
@@ -17,6 +18,11 @@ $data = array();
 if (!$fp) {
 	die($errstr);
 } else {
+	if (isset($servers[$server][3]) && !is_null($servers[$server][3]) && !empty($servers[$server][3]))
+	{
+		$pwd = $servers[$server][3];
+		fwrite($fp, "AUTH $pwd\r\n");
+	}
 	fwrite($fp, "INFO\r\nQUIT\r\n");
 	while (!feof($fp)) {
 		$info = explode(':', trim(fgets($fp)), 2);
@@ -32,6 +38,7 @@ $getDbIndex = function($db)
 $redisDatabases = array_values(array_map($getDbIndex, preg_grep("/^db[0-9]+$/", array_keys($data))));
 
 function time_elapsed($secs) {
+	if (!$secs) return;
 	$bit = array(
 		' year'      => $secs / 31556926 % 12,
 		' week'      => $secs / 604800 % 52,
@@ -365,6 +372,13 @@ window.createPie = createPie;
 <?php endforeach; ?>
 </select>
 </form>
+<?php
+if (!$data)
+{
+	echo "No data is available.<br>Maybe a password is required to access the database or the password is wrong.";
+}
+?>
+<div<?php echo ($data) ? '' : ' style="display: none;"' ?>>  <!-- A  -->
 <div class="grid">
 <div class='box col2'>
 	<h2>Hits</h2>
@@ -436,7 +450,7 @@ window.createPie = createPie;
 <div class='box col'>
 	<h2>Persistence</h2>
 	<p class="details">Changes since last save: <?php echo number_format($data['rdb_changes_since_last_save']) ?></p>
-	<p class="details">Last saved<br /><?php echo time_elapsed(time() - $data['rdb_last_save_time']) ?> ago.</p>
+	<p class="details">Last saved<br /><?php echo ($data) ? time_elapsed(time() - $data['rdb_last_save_time']) : '0' ?> ago.</p>
 </div>
 
 </div>
@@ -458,6 +472,7 @@ window.createPie = createPie;
 <?php } ?>
 </div>
 </div>
+</div> <!-- A  -->
 <script>
 (function() {
 var hitPie = createPie('174px',[{value: <?php echo $hitRate ?>, color: '#8892BF' }]);
