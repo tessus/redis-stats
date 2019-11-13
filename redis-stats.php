@@ -1,12 +1,23 @@
 <?php
-// CONFIG
+
+// Default config
 $servers = array(
 	array('Local', '127.0.0.1', 6379),
-	array('Local pwd', '127.0.0.1', 6379, 'password_here'),
 );
-// END CONFIG
 
-define("DEBUG", false);
+if (file_exists(dirname(__FILE__)."/config.php"))
+{
+    require_once dirname(__FILE__).'/config.php';
+}
+if (!servers)
+{
+	die("No config found.");
+}
+
+if (!defined('DEBUG'))
+{
+	define("DEBUG", false);
+}
 
 $server = 0;
 if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
