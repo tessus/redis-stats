@@ -9,7 +9,7 @@ if (file_exists(dirname(__FILE__)."/config.php"))
 {
     require_once dirname(__FILE__).'/config.php';
 }
-if (!servers)
+if (!$servers)
 {
 	die("No config found.");
 }
@@ -421,8 +421,14 @@ if ($error)
 	<h2>Hits</h2>
 	<div class="grid">
 	<div id="hitrate" class="col">
-	<?php $hitRate = sprintf('%.1f' , $data['keyspace_hits'] / ($data['keyspace_hits'] + $data['keyspace_misses']) * 100); ?>
-	<div class="key"><?php echo $hitRate ?>%</div>
+	<?php
+		$hitRate = 0;
+		if (($data['keyspace_hits'] + $data['keyspace_misses']) != 0)
+		{
+			$hitRate = sprintf('%.1f' , $data['keyspace_hits'] / ($data['keyspace_hits'] + $data['keyspace_misses']) * 100);
+		}
+	?>
+	<div class="key"><?php echo ($hitRate) ? $hitRate."%" : '' ?></div>
 	</div>
 	<div class="col">
 	<div class="detail">
