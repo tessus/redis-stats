@@ -6,17 +6,21 @@ $servers = array(
 );
 // END CONFIG
 
+define("DEBUG", false);
+
 $server = 0;
 if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
 	$server = intval($_GET['s']);
 }
+
+$error = null;
 
 $fp = fsockopen($servers[$server][1], $servers[$server][2], $errno, $errstr, 30);
 
 $data = array();
 
 if (!$fp) {
-	die($errstr);
+	$error = $errstr;
 } else {
 	if (isset($servers[$server][3]) && !is_null($servers[$server][3]) && !empty($servers[$server][3]))
 	{
@@ -30,6 +34,13 @@ if (!$fp) {
 	}
 	fclose($fp);
 }
+
+if (!$data && !$error)
+{
+	$error = "No data is available.<br>Maybe a password is required to access the database or the password is wrong.";
+}
+
+debug($data);
 
 $getDbIndex = function($db)
 {
@@ -55,6 +66,16 @@ function time_elapsed($secs) {
 	array_splice($ret, count($ret) - 1, 0, 'and');
 
 	return implode(' ', $ret);
+}
+
+function debug($var, $pre = true)
+{
+	if (DEBUG)
+	{
+		if ($pre) echo "<pre>".PHP_EOL;
+		var_dump($var);
+		if ($pre) echo "</pre>".PHP_EOL;
+	}
 }
 ?>
 <!DOCTYPE html>
@@ -116,6 +137,11 @@ form {
 
 .col2 {
 	width: 460px;
+	display: inline-block;
+}
+
+.col3 {
+	width: 700px;
 	display: inline-block;
 }
 
@@ -362,7 +388,7 @@ window.createPie = createPie;
 
 </head>
 <body>
-<div class="wrapper">
+<div class="wrapper">   <!-- A  -->
 <h1>Redis Stats</h1>
 <form method="get">
 <label for="server">Server:</label>
@@ -373,12 +399,12 @@ window.createPie = createPie;
 </select>
 </form>
 <?php
-if (!$data)
+if ($error)
 {
-	echo "No data is available.<br>Maybe a password is required to access the database or the password is wrong.";
+	die($error."\n</div>\n</body>\n</html>\n");
 }
 ?>
-<div<?php echo ($data) ? '' : ' style="display: none;"' ?>>  <!-- A  -->
+<div<?php echo ($data) ? '' : ' style="display: none;"' ?>>   <!-- B  -->
 <div class="grid">
 <div class='box col2'>
 	<h2>Hits</h2>
@@ -462,6 +488,7 @@ if (!$data)
 		<?php
 			$values = explode(',', $data["db$i"]);
 			foreach ($values as $value) {
+				debug($value, false);
 				$kv = explode('=', $value, 2);
 				$keyData[$kv[0]] = $kv[1];
 			}
@@ -471,8 +498,8 @@ if (!$data)
 	</div>
 <?php } ?>
 </div>
-</div>
-</div> <!-- A  -->
+</div>   <!-- B  -->
+</div>   <!-- A  -->
 <script>
 (function() {
 var hitPie = createPie('174px',[{value: <?php echo $hitRate ?>, color: '#8892BF' }]);
