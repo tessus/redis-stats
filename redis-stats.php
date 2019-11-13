@@ -25,6 +25,12 @@ if (!$fp) {
 	fclose($fp);
 }
 
+$getDbIndex = function($db)
+{
+	return (int) substr($db, 2);
+};
+$redisDatabases = array_values(array_map($getDbIndex, preg_grep("/^db[0-9]+$/", array_keys($data))));
+
 function time_elapsed($secs) {
 	$bit = array(
 		' year'      => $secs / 31556926 % 12,
@@ -435,10 +441,10 @@ window.createPie = createPie;
 
 </div>
 <div class="grid">
-<?php for ($i = 0; isset($data["db$i"]); $i++): ?>
-<div class='box col'>
-	<h2>Keys in store <em><?php echo "db$i" ?></em></h2>
-	<div class="key">
+<?php foreach ($redisDatabases as $i) { ?>
+	<div class='box col'>
+		<h2>Keys in store <em><?php echo "db$i" ?></em></h2>
+		<div class="key">
 		<?php
 			$values = explode(',', $data["db$i"]);
 			foreach ($values as $value) {
@@ -447,9 +453,9 @@ window.createPie = createPie;
 			}
 			echo $keyData['keys'];
 		?>
+		</div>
 	</div>
-</div>
-<?php endfor; ?>
+<?php } ?>
 </div>
 </div>
 <script>
