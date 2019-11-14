@@ -199,6 +199,11 @@ form {
 	text-align: right;
 }
 
+.detail .key {
+	font-weight: bold;
+	text-align: right;
+}
+
 #hitrate { position: relative; }
 
 #hitrate .key {
@@ -401,7 +406,7 @@ window.createPie = createPie;
 </script>
 
 </head>
-<body>
+<body onload="evalDetails()">
 <div class="wrapper">   <!-- A  -->
 <h1>Redis Stats</h1>
 <form method="get">
@@ -412,13 +417,17 @@ window.createPie = createPie;
 <?php endforeach; ?>
 </select>
 </form>
+
 <?php
 if ($error)
 {
 	die($error."\n</div>\n</body>\n</html>\n");
 }
 ?>
-<div<?php echo ($data) ? '' : ' style="display: none;"' ?>>   <!-- B  -->
+
+<button id="togglebutton" onclick="toggle('allinfo');">Toggle details</button>
+<button id="refreshbutton" onclick="location.reload();">Refresh</button>
+
 <div class="grid">
 <div class='box col2'>
 	<h2>Hits</h2>
@@ -518,13 +527,43 @@ if ($error)
 	</div>
 <?php } ?>
 </div>
-</div>   <!-- B  -->
+
+<div id="allinfo" style="display: none;" class='box col3'>
+	<h2>Details</h2>
+	<div class="details">
+
+	<?php
+	foreach ($data as $key => $value)
+	{
+		echo '<div class="detail">'."\n";
+		echo '<span class="key">' . $key.':' . '</span>'."\n";
+		echo '<span>' . $value . '</span>'."\n";
+		echo "</div>\n";
+	}
+	?>
+
+	</div>
+</div>
+
 </div>   <!-- A  -->
 <script>
 (function() {
 var hitPie = createPie('174px',[{value: <?php echo $hitRate ?>, color: '#8892BF' }]);
 document.getElementById('hitrate').appendChild(hitPie);
 }());
+function toggle(id) {
+	var state = document.getElementById(id).style.display;
+	if (state == 'inline-block') {
+		document.getElementById(id).style.display = 'none';
+		localStorage.setItem('showRedisStatsDetails', 'false');
+	} else {
+		document.getElementById(id).style.display = 'inline-block';
+		localStorage.setItem('showRedisStatsDetails', 'true');
+	}
+}
+function evalDetails() {
+	if (localStorage.getItem('showRedisStatsDetails') === 'true') document.getElementById('allinfo').style.display = 'inline-block';
+}
 </script>
 </body>
 </html>
