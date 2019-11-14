@@ -74,7 +74,10 @@ function time_elapsed($secs) {
 		if($v > 1) $ret[] = $v . $k . 's';
 		if($v == 1) $ret[] = $v . $k;
 	}
-	array_splice($ret, count($ret) - 1, 0, 'and');
+	if (count($ret) > 1)
+	{
+		array_splice($ret, count($ret) - 1, 0, 'and');
+	}
 
 	return implode(' ', $ret);
 }
