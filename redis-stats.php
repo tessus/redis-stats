@@ -461,11 +461,14 @@ if ($error)
 	</div>
 	</div>
 	</div>
+	<?php if ($data['maxmemory'] > 0) echo "<br>\n"; ?>
 </div>
 
 <div class='box col'>
 	<h2>Used Memory</h2>
+
 	<div class="key"><?php echo $data['used_memory_human'] ?></div>
+	<?php if ($data['maxmemory'] > 0) echo "/ ${data['maxmemory_human']}\n"; ?>
 	<h2>Peak Memory</h2>
 	<div class="key"><?php echo $data['used_memory_peak_human'] ?></div>
 </div>
