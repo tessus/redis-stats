@@ -26,7 +26,7 @@ if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
 
 $error = null;
 
-$fp = fsockopen($servers[$server][1], $servers[$server][2], $errno, $errstr, 30);
+$fp = @fsockopen($servers[$server][1], $servers[$server][2], $errno, $errstr, 30);
 
 $data = array();
 
