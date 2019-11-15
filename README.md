@@ -4,7 +4,12 @@
 
 - lightweight
 - no PHP redis module required
-- show details (optional)
+- connection via IP/port or socket
+- password support
+- show details
+- flush database (async support)
+- flush instance (async support)
+- command masking available
 
 ## Screenshot
 

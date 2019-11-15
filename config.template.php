@@ -17,6 +17,19 @@ $servers = [
 	[ 'Local with password', '127.0.0.1', 6379, 'password_here' ],
 ];
 
+// Show a 'Flush' button for databases
+define("FLUSHDB", true);
+
+// Show a 'Flush All' button for the instance
+define("FLUSHALL", true);
+
+// Command Masking
+$command = [
+	'FLUSHDB'  => '',
+	'FLUSHALL' => '',
+];
+
+// debug mode - you don't want to set this!
 define("DEBUG", false);
 
 // END CONFIG

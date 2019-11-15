@@ -1,5 +1,10 @@
 <?php
 
+session_start();
+
+$id = bin2hex(random_bytes(16));
+$_SESSION['id'] = $id;
+
 // Default config
 $servers = array(
 	array('Local', '127.0.0.1', 6379),
@@ -7,16 +12,25 @@ $servers = array(
 
 if (file_exists(dirname(__FILE__)."/config.php"))
 {
-    require_once dirname(__FILE__).'/config.php';
+	require_once dirname(__FILE__).'/config.php';
 }
 if (!$servers)
 {
-	die("No config found.");
+	die("No servers in config found.");
 }
 
+// Default settings
 if (!defined('DEBUG'))
 {
 	define("DEBUG", false);
+}
+if (!defined('FLUSHDB'))
+{
+	define("FLUSHDB", true);
+}
+if (!defined('FLUSHALL'))
+{
+	define("FLUSHALL", true);
 }
 
 $server = 0;
@@ -406,7 +420,7 @@ window.createPie = createPie;
 </script>
 
 </head>
-<body onload="evalDetails()">
+<body onload="initRedisInfo()">
 <div class="wrapper">   <!-- A  -->
 <h1>Redis Stats</h1>
 <form method="get">
@@ -425,8 +439,14 @@ if ($error)
 }
 ?>
 
-<button id="togglebutton" onclick="toggle('allinfo');">Toggle details</button>
+<button id="togglebutton" onclick="toggleDetails();">Toggle details</button>
 <button id="refreshbutton" onclick="location.reload();">Refresh</button>
+
+<?php
+if (FLUSHDB === true || FLUSHALL === true) {
+	echo '<input type="checkbox" id="checkboxasync" onclick="toggleAsync();"> flush async</input>';
+}
+?>
 
 <div class="grid">
 <div class='box col2'>
@@ -527,9 +547,18 @@ if ($error)
 			echo $keyData['keys'];
 		?>
 		</div>
+		<?php if(FLUSHDB === true) { ?>
+		<button class="flushButton" id="flush<?php echo "$i" ?>" value="<?php echo "$i" ?>" onclick="flushDB(<?php echo "$server" ?>,value);">&nbsp;&nbsp;&nbsp;Flush&nbsp;&nbsp;&nbsp;</button>
+		<?php } ?>
 	</div>
 <?php } ?>
 </div>
+
+<?php if(FLUSHALL === true) { ?>
+<div>
+<button id="flushall" onclick="flushDB(<?php echo "$server" ?>,-1);">&nbsp;&nbsp;&nbsp;FLUSH ALL&nbsp;&nbsp;&nbsp;</button>
+</div>
+<?php } ?>
 
 <div id="allinfo" style="display: none;" class='box col3'>
 	<h2>Details</h2>
@@ -554,18 +583,81 @@ if ($error)
 var hitPie = createPie('174px',[{value: <?php echo $hitRate ?>, color: '#8892BF' }]);
 document.getElementById('hitrate').appendChild(hitPie);
 }());
-function toggle(id) {
-	var state = document.getElementById(id).style.display;
+
+function toggleDetails() {
+	var state = document.getElementById('allinfo').style.display;
 	if (state == 'inline-block') {
-		document.getElementById(id).style.display = 'none';
-		localStorage.setItem('showRedisStatsDetails', 'false');
+		document.getElementById('allinfo').style.display = 'none';
+		localStorage.setItem('redisInfoDetails', 'false');
 	} else {
-		document.getElementById(id).style.display = 'inline-block';
-		localStorage.setItem('showRedisStatsDetails', 'true');
+		document.getElementById('allinfo').style.display = 'inline-block';
+		localStorage.setItem('redisInfoDetails', 'true');
 	}
 }
-function evalDetails() {
-	if (localStorage.getItem('showRedisStatsDetails') === 'true') document.getElementById('allinfo').style.display = 'inline-block';
+
+function toggleAsync() {
+	const checked = document.getElementById("checkboxasync").checked;
+
+	if (checked) {
+		localStorage.setItem('redisInfoFlushAsync', 'true');
+		changeFlushButtons(checked);
+	} else {
+		localStorage.setItem('redisInfoFlushAsync', 'false');
+		changeFlushButtons(checked);
+	}
+}
+
+function changeFlushButtons(status) {
+	if (status) {
+		if (document.getElementById('flushall')) document.getElementById('flushall').innerHTML = '&nbsp;&nbsp;&nbsp;FLUSH ALL ASYNC&nbsp;&nbsp;&nbsp;';
+		const button = document.getElementsByClassName("flushButton");
+		var i;
+		for (i = 0; i < button.length; i++) {
+			button[i].innerHTML = '&nbsp;&nbsp;&nbsp;Flush Async&nbsp;&nbsp;&nbsp;';
+		}
+	} else {
+		if (document.getElementById('flushall')) document.getElementById('flushall').innerHTML = '&nbsp;&nbsp;&nbsp;FLUSH ALL&nbsp;&nbsp;&nbsp;';
+		const button = document.getElementsByClassName("flushButton");
+		var i;
+		for (i = 0; i < button.length; i++) {
+			button[i].innerHTML = '&nbsp;&nbsp;&nbsp;Flush&nbsp;&nbsp;&nbsp;';
+		}
+	}
+}
+
+function initRedisInfo() {
+	if (localStorage.getItem('redisInfoDetails') === 'true') document.getElementById('allinfo').style.display = 'inline-block';
+	if (localStorage.getItem('redisInfoFlushAsync') === 'true') {
+		changeFlushButtons(true);
+		document.getElementById("checkboxasync").checked = true;
+	}
+
+}
+function flushDB(server, db) {
+	if (db == -1) {
+		if(!confirm("This will flush the entire Redis instance.")) {
+			return;
+		}
+	}
+	var flushAsync = (localStorage.getItem('redisInfoFlushAsync') === 'true') ? 1 : 0;
+	const tid = '<?php echo $id; ?>';
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+		if (this.readyState==4 && this.status == 200) {
+			if (this.responseText == 'Success')
+			{
+				if (db != -1) {
+					document.getElementById('flush'+db).innerHTML = 'Flushed';
+				} else {
+					document.getElementById('flushall').innerHTML = 'ALL Flushed';
+				}
+				setTimeout("location.reload()", 2000);
+			}
+		}
+	};
+	const req = 'flushdb.php?id='+tid+'&s='+server+'&db='+db+'&async='+flushAsync;
+	xmlhttp.open("GET", req, true);
+	xmlhttp.send();
 }
 </script>
 </body>
