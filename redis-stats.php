@@ -166,6 +166,22 @@ form {
 	border-top: 0;
 }
 
+.menu1 {
+	font-size: 1rem;
+	width: 350px;
+	text-align: right;
+	display: inline-block;
+	padding-right: 50px;
+}
+
+.menu2 {
+	font-size: 1rem;
+	width: 350px;
+	text-align: left;
+	display: inline-block;
+	padding-left: 20px;
+}
+
 .col {
 	width: 224px;
 	display: inline-block;
@@ -439,7 +455,7 @@ window.createPie = createPie;
 
 </head>
 <body onload="initRedisInfo()">
-<div class="wrapper">   <!-- A  -->
+<div class="wrapper">   <!-- Wrapper  -->
 <h1>Redis Stats</h1>
 <form method="get">
 <label for="server">Server:</label>
@@ -457,14 +473,22 @@ if ($error)
 }
 ?>
 
-<button id="togglebutton" onclick="toggleDetails();">Toggle details</button>
-<button id="refreshbutton" onclick="location.reload();">Refresh</button>
+<div class="grid">   <!-- Top Menu  -->
+	<div class="menu1">
+		Refresh Rate: <input type="text" id="rate" value="2" size="5" onkeyup="myInputTest()"> <button id="play" onclick="playpause();">Play</button>
+	</div>
 
-<?php
-if (FLUSHDB === true || FLUSHALL === true) {
-	echo '<input type="checkbox" id="checkboxasync" onclick="toggleAsync();"> flush async';
-}
-?>
+	<div class="menu2">
+		<button id="togglebutton" onclick="toggleDetails();">Toggle details</button>
+		<button id="refreshbutton" onclick="location.reload();">Refresh</button>
+
+		<?php
+		if (FLUSHDB === true || FLUSHALL === true) {
+			echo '<input type="checkbox" id="checkboxasync" onclick="toggleAsync();"> flush async';
+		}
+		?>
+	</div>
+</div>   <!-- Top Menu  -->
 
 <div class="grid">
 <div class='box col2'>
@@ -599,8 +623,17 @@ if (FLUSHDB === true || FLUSHALL === true) {
 	</div>
 </div>
 
-</div>   <!-- A  -->
+</div>   <!-- Wrapper  -->
 <script>
+var rate  = 0;
+var play  = 0;
+var delay = 1000;
+var doc_rate = document.getElementById("rate");
+var doc_play = document.getElementById("play");
+var doc_msg  = document.getElementById('msg');
+const errorColor   = '#F88';
+const successColor = '#C1FFC1';
+
 (function() {
 var hitPie = createPie('174px',[{value: <?php echo $hitRate ?>, color: '#8892BF' }]);
 document.getElementById('hitrate').appendChild(hitPie);
@@ -653,11 +686,19 @@ function initRedisInfo() {
 		changeFlushButtons(true);
 		document.getElementById("checkboxasync").checked = true;
 	}
-
+	if (localStorage.getItem('redisInfoPlayDelay')) {
+		doc_rate.value = localStorage.getItem('redisInfoPlayDelay');
+	}
+	if (sessionStorage.getItem('redisInfoPlay') == '1') { // we are still in auto refesh mode
+		doc_rate.value = localStorage.getItem('redisInfoPlayDelay');
+		doc_rate.disabled = true;
+		doc_play.innerHTML = "Pause";
+		play = 1;
+		autorefresh();
+	}
 }
+
 function flushDB(server, db) {
-	const successColor = '#C1FFC1';
-	const errorColor   = '#F88';
 	if (db == -1) {
 		if(!confirm("This will flush the entire Redis instance.")) {
 			return;
@@ -672,15 +713,15 @@ function flushDB(server, db) {
 				if (db != -1) {
 					document.getElementById('flush'+db).innerHTML        = 'Flushed';
 					document.getElementById('flush'+db).style.background = successColor;
-					document.getElementById('msg').style.visibility      = 'visible';
-					document.getElementById('msg').style.background      = successColor;
+					doc_msg.style.visibility                             = 'visible';
+					doc_msg.style.background                             = successColor;
 				} else {
 					document.getElementById('flushall').innerHTML        = 'ALL Flushed';
 					document.getElementById('flushall').style.background = successColor;
-					document.getElementById('msg').style.visibility      = 'visible';
-					document.getElementById('msg').style.background      = successColor;
+					doc_msg.style.visibility                             = 'visible';
+					doc_msg.style.background                             = successColor;
 				}
-				document.getElementById('msg').innerHTML = '+OK';
+				doc_msg.innerHTML = '+OK';
 				setTimeout("location.reload()", 2500);
 			} else {
 				if (db != -1) {
@@ -688,9 +729,9 @@ function flushDB(server, db) {
 				} else {
 					document.getElementById('flushall').style.background = errorColor;
 				}
-				document.getElementById('msg').style.visibility = 'visible';
-				document.getElementById('msg').style.background = errorColor;
-				document.getElementById('msg').innerHTML = this.responseText;
+				doc_msg.style.visibility = 'visible';
+				doc_msg.style.background = errorColor;
+				doc_msg.innerHTML = this.responseText;
 			}
 		}
 	};
@@ -698,6 +739,72 @@ function flushDB(server, db) {
 	xmlhttp.open("GET", req, true);
 	xmlhttp.send();
 }
+
+function autorefresh() {
+	delay = parseInt(doc_rate.value);
+	if (!delay || delay < 1) {
+		doc_msg.style.visibility = 'visible';
+		doc_msg.style.background = errorColor;
+		doc_msg.innerHTML = "Not a valid 'refresh' value.";
+		return;
+	}
+	play = 1;
+	doc_rate.disabled = true;
+	doc_play.innerHTML = "Pause";
+	localStorage.setItem('redisInfoPlayDelay', delay);
+	sessionStorage.setItem('redisInfoPlay', play);
+	setTimeout("callback()", delay * 1000);
+}
+
+function playpause() {
+	rate = 0;
+	if (play) {
+		play = 0;
+		doc_play.innerHTML = "Play";
+		doc_rate.disabled = false;
+		sessionStorage.setItem('redisInfoPlay', play);
+	} else {
+		autorefresh();
+	}
+}
+
+function callback() {
+	if (!play) return;
+	setTimeout("location.reload()", delay * 1000);
+}
+
+function inputMsgSuccess() {
+	doc_msg.style.visibility = 'hidden';
+	doc_msg.style.background = errorColor;
+	doc_rate.style.background = null;
+	doc_msg.innerHTML = "";
+}
+
+function inputMsgError() {
+	doc_msg.style.visibility = 'visible';
+	doc_msg.style.background = errorColor;
+	doc_msg.innerHTML = "Not a valid 'refresh' rate. The value must be > 0 and <= 86400.";
+}
+
+function myInputTest() {
+	var x = doc_rate.value;
+	console.log(x);
+	if (x == '') {
+		doc_play.disabled = true;
+		inputMsgSuccess();
+		return;
+	}
+	if (/\D/.test(x) || x < 1 || x > 86400 ) {
+		doc_play.disabled = true;
+		if (x != '') {
+			inputMsgError();
+		}
+	} else {
+		doc_play.disabled = false;
+		inputMsgSuccess();
+	}
+}
+
 </script>
 </body>
 </html>
