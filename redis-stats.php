@@ -462,7 +462,7 @@ if ($error)
 
 <?php
 if (FLUSHDB === true || FLUSHALL === true) {
-	echo '<input type="checkbox" id="checkboxasync" onclick="toggleAsync();"> flush async</input>';
+	echo '<input type="checkbox" id="checkboxasync" onclick="toggleAsync();"> flush async';
 }
 ?>
 
