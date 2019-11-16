@@ -788,7 +788,6 @@ function inputMsgError() {
 
 function myInputTest() {
 	var x = doc_rate.value;
-	console.log(x);
 	if (x == '') {
 		doc_play.disabled = true;
 		inputMsgSuccess();
