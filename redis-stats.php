@@ -135,6 +135,14 @@ h1 {
 	color: #22242F;
 }
 
+button {
+	margin-top: 2px;
+	margin-bottom: 2px;
+	vertical-align: middle !important;
+	line-height: normal;
+	padding: 2px 4px 2px 4px !important;
+}
+
 form {
 	margin: 1em 0;
 }
@@ -171,6 +179,16 @@ form {
 .col3 {
 	width: 700px;
 	display: inline-block;
+}
+
+.boxmsg {
+	font-size: 1rem;
+	vertical-align: middle;
+	text-align: center;
+	margin: 6px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	padding: 2px 2px 2px 2px !important;
 }
 
 .col2 .col {
@@ -560,6 +578,10 @@ if (FLUSHDB === true || FLUSHALL === true) {
 </div>
 <?php } ?>
 
+<div id="msg" class='boxmsg col3' style="visibility: hidden;">
+&nbsp;
+</div>
+<br>
 <div id="allinfo" style="display: none;" class='box col3'>
 	<h2>Details</h2>
 	<div class="details">
@@ -634,6 +656,8 @@ function initRedisInfo() {
 
 }
 function flushDB(server, db) {
+	const successColor = '#C1FFC1';
+	const errorColor   = '#F88';
 	if (db == -1) {
 		if(!confirm("This will flush the entire Redis instance.")) {
 			return;
@@ -644,14 +668,29 @@ function flushDB(server, db) {
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState==4 && this.status == 200) {
-			if (this.responseText == 'Success')
-			{
+			if (this.responseText == 'Success') {
 				if (db != -1) {
-					document.getElementById('flush'+db).innerHTML = 'Flushed';
+					document.getElementById('flush'+db).innerHTML        = 'Flushed';
+					document.getElementById('flush'+db).style.background = successColor;
+					document.getElementById('msg').style.visibility      = 'visible';
+					document.getElementById('msg').style.background      = successColor;
 				} else {
-					document.getElementById('flushall').innerHTML = 'ALL Flushed';
+					document.getElementById('flushall').innerHTML        = 'ALL Flushed';
+					document.getElementById('flushall').style.background = successColor;
+					document.getElementById('msg').style.visibility      = 'visible';
+					document.getElementById('msg').style.background      = successColor;
 				}
-				setTimeout("location.reload()", 2000);
+				document.getElementById('msg').innerHTML = '+OK';
+				setTimeout("location.reload()", 2500);
+			} else {
+				if (db != -1) {
+					document.getElementById('flush'+db).style.background = errorColor;
+				} else {
+					document.getElementById('flushall').style.background = errorColor;
+				}
+				document.getElementById('msg').style.visibility = 'visible';
+				document.getElementById('msg').style.background = errorColor;
+				document.getElementById('msg').innerHTML = this.responseText;
 			}
 		}
 	};

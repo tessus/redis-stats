@@ -4,7 +4,7 @@ session_start();
 if (!isset($_GET['id']) || isset($_GET['id']) && $_GET['id'] != $_SESSION['id'])
 {
 	$_SESSION['id'] = '';
-	die("Error");
+	die("Invalid request.");
 }
 
 if (file_exists(dirname(__FILE__)."/config.php"))
@@ -13,7 +13,7 @@ if (file_exists(dirname(__FILE__)."/config.php"))
 }
 if (!$servers)
 {
-	die("No config found.");
+	die("No servers in config found.");
 }
 
 $server = null;
@@ -80,8 +80,16 @@ if (array_unique($info) === array('+OK'))
 	$_SESSION['id'] = '';
 	echo "Success";
 }
-elseif (DEBUG)
+else
 {
-	echo $command.PHP_EOL;
-	echo implode("\n", $info);
+	if (DEBUG === true)
+	{
+		var_dump($command);
+		var_dump($info);
+	}
+	foreach ($info as $v)
+	{
+		if ($v != '+OK')
+			die($v);
+	}
 }
