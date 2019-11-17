@@ -20,8 +20,14 @@ $servers = [
 // Show a 'Flush' button for databases
 define("FLUSHDB", true);
 
+// Ask for confirmation before flushing database
+define("CONFIRM_FLUSHDB", true);
+
 // Show a 'Flush All' button for the instance
 define("FLUSHALL", true);
+
+// Ask for confirmation before flushing the entire instance
+define("CONFIRM_FLUSHALL", true);
 
 // Command Masking
 $command = [

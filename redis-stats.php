@@ -32,6 +32,14 @@ if (!defined('FLUSHALL'))
 {
 	define("FLUSHALL", true);
 }
+if (!defined('CONFIRM_FLUSHDB'))
+{
+	define("CONFIRM_FLUSHDB", true);
+}
+if (!defined('CONFIRM_FLUSHALL'))
+{
+	define("CONFIRM_FLUSHALL", true);
+}
 
 $server = 0;
 if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
@@ -590,7 +598,7 @@ if ($error)
 		?>
 		</div>
 		<?php if(FLUSHDB === true) { ?>
-		<button class="flushButton" id="flush<?php echo "$i" ?>" value="<?php echo "$i" ?>" onclick="flushDB(<?php echo "$server" ?>,value);">&nbsp;&nbsp;&nbsp;Flush&nbsp;&nbsp;&nbsp;</button>
+		<button class="flushButton" id="flush<?php echo "$i" ?>" style="width: 100px;" value="<?php echo "$i" ?>" onclick="flushDB(<?php echo "$server" ?>,value);">Flush</button>
 		<?php } ?>
 	</div>
 <?php } ?>
@@ -598,7 +606,7 @@ if ($error)
 
 <?php if(FLUSHALL === true) { ?>
 <div>
-<button id="flushall" onclick="flushDB(<?php echo "$server" ?>,-1);">&nbsp;&nbsp;&nbsp;FLUSH ALL&nbsp;&nbsp;&nbsp;</button>
+<button id="flushall" style="width: 150px;" onclick="flushDB(<?php echo "$server" ?>,-1);">FLUSH ALL</button>
 </div>
 <?php } ?>
 
@@ -633,6 +641,11 @@ var doc_play = document.getElementById("play");
 var doc_msg  = document.getElementById('msg');
 const errorColor   = '#F88';
 const successColor = '#C1FFC1';
+const defaultColor = '#E6E6E6';
+const CONFIRM_FLUSHDB = '<?php echo CONFIRM_FLUSHDB; ?>';
+const CONFIRM_FLUSHALL = '<?php echo CONFIRM_FLUSHALL; ?>';
+const FLUSHDB = '<?php echo FLUSHDB; ?>';
+const FLUSHALL = '<?php echo FLUSHALL; ?>';
 
 (function() {
 var hitPie = createPie('174px',[{value: <?php echo $hitRate ?>, color: '#8892BF' }]);
@@ -664,18 +677,18 @@ function toggleAsync() {
 
 function changeFlushButtons(status) {
 	if (status) {
-		if (document.getElementById('flushall')) document.getElementById('flushall').innerHTML = '&nbsp;&nbsp;&nbsp;FLUSH ALL ASYNC&nbsp;&nbsp;&nbsp;';
+		if (document.getElementById('flushall')) document.getElementById('flushall').innerHTML = 'FLUSH ALL ASYNC';
 		const button = document.getElementsByClassName("flushButton");
 		var i;
 		for (i = 0; i < button.length; i++) {
-			button[i].innerHTML = '&nbsp;&nbsp;&nbsp;Flush Async&nbsp;&nbsp;&nbsp;';
+			button[i].innerHTML = 'Flush Async';
 		}
 	} else {
-		if (document.getElementById('flushall')) document.getElementById('flushall').innerHTML = '&nbsp;&nbsp;&nbsp;FLUSH ALL&nbsp;&nbsp;&nbsp;';
+		if (document.getElementById('flushall')) document.getElementById('flushall').innerHTML = 'FLUSH ALL';
 		const button = document.getElementsByClassName("flushButton");
 		var i;
 		for (i = 0; i < button.length; i++) {
-			button[i].innerHTML = '&nbsp;&nbsp;&nbsp;Flush&nbsp;&nbsp;&nbsp;';
+			button[i].innerHTML = 'Flush';
 		}
 	}
 }
@@ -696,11 +709,17 @@ function initRedisInfo() {
 		play = 1;
 		autorefresh();
 	}
+	defaultMsg();
 }
 
 function flushDB(server, db) {
-	if (db == -1) {
-		if(!confirm("This will flush the entire Redis instance.")) {
+	if ((db == -1) && CONFIRM_FLUSHALL) {
+		if(!confirm("This will flush the entire Redis instance.\n\nAre you sure?")) {
+			return;
+		}
+	}
+	if (CONFIRM_FLUSHDB) {
+		if(!confirm("This will flush db"+db+"\n\nAre you sure?")) {
 			return;
 		}
 	}
@@ -775,15 +794,32 @@ function callback() {
 
 function inputMsgSuccess() {
 	doc_msg.style.visibility = 'hidden';
-	doc_msg.style.background = errorColor;
 	doc_rate.style.background = null;
 	doc_msg.innerHTML = "";
+	defaultMsg();
 }
 
 function inputMsgError() {
 	doc_msg.style.visibility = 'visible';
 	doc_msg.style.background = errorColor;
 	doc_msg.innerHTML = "Not a valid 'refresh' rate. The value must be > 0 and <= 86400.";
+}
+
+function defaultMsg() {
+	if (FLUSHDB || FLUSHALL) {
+		var text = [];
+		doc_msg.style.visibility = 'visible';
+		doc_msg.style.background = defaultColor;
+		if (FLUSHDB) {
+			text.push('confirm flushing db: ' + (CONFIRM_FLUSHDB ? 'ON' : 'OFF'));
+		}
+		if (FLUSHALL) {
+			text.push('confirm flushing instance: ' + (CONFIRM_FLUSHALL ? 'ON' : 'OFF'));
+		}
+		const comment = text.join('<span style="display: inline-block; width: 50px;"></span>');
+		doc_msg.textAlign = 'center';
+		doc_msg.innerHTML = comment;
+	}
 }
 
 function myInputTest() {
