@@ -55,12 +55,15 @@ $data = array();
 if (!$fp) {
 	$error = $errstr;
 } else {
+	$command = '';
+
 	if (isset($servers[$server][3]) && !is_null($servers[$server][3]) && !empty($servers[$server][3]))
 	{
 		$pwd = $servers[$server][3];
-		fwrite($fp, "AUTH $pwd\r\n");
+		$command = "AUTH $pwd\r\n";
 	}
-	fwrite($fp, "INFO\r\nQUIT\r\n");
+	$command .= "INFO\r\nQUIT\r\n";
+	fwrite($fp, $command);
 	while (!feof($fp)) {
 		$info = explode(':', trim(fgets($fp)), 2);
 		if (isset($info[1])) $data[$info[0]] = $info[1];
