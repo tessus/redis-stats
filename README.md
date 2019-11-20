@@ -5,11 +5,11 @@
 - lightweight
 - no PHP redis module required
 - connection via IP/port or socket
-- password support
+- password support (including Redis 6 ACLs)
 - show details
 - flush database (async support)
 - flush instance (async support)
-- command masking available
+- command mapping support (when rename-command is used on the server)
 
 ## Screenshot
 

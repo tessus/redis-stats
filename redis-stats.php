@@ -57,12 +57,25 @@ if (!$fp) {
 } else {
 	$command = '';
 
-	if (isset($servers[$server][3]) && !is_null($servers[$server][3]) && !empty($servers[$server][3]))
+	isset($servers[$server][3]) ? $pwdEntry = $servers[$server][3] : $pwdEntry = null;
+	if (!is_null($pwdEntry) && !empty($pwdEntry))
 	{
-		$pwd = $servers[$server][3];
-		$command = "AUTH $pwd\r\n";
+		if (is_array($pwdEntry))
+		{
+			if (!isset($pwdEntry[1]) || is_null($pwdEntry[1]) || empty($pwdEntry[1]))
+			{
+				$pwdEntry[1] = '0';
+			}
+			$credentials = "$pwdEntry[0] $pwdEntry[1]";
+		}
+		else
+		{
+			$credentials = $pwdEntry;
+		}
+		$command = "AUTH $credentials\r\n";
 	}
 	$command .= "INFO\r\nQUIT\r\n";
+
 	fwrite($fp, $command);
 	while (!feof($fp)) {
 		$info = explode(':', trim(fgets($fp)), 2);
