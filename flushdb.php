@@ -16,7 +16,7 @@ if (!$servers)
 	die("No servers in config found.");
 }
 
-$server = null;
+$server = 0;
 if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
 	$server = intval($_GET['s']);
 }
