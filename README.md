@@ -12,6 +12,14 @@
 - command mapping support (when rename-command is used on the server)
 - auto refresh
 
+## Installation
+
+```
+git clone --depth 1 https://github.com/tessus/redis-stats.git
+cd redis-stats
+cp config.template.php config.php
+```
+
 ## Screenshot
 
 ![](https://evermeet.cx/pub/img/redis-stats.png)
