@@ -35,6 +35,7 @@ $command = [
 	'FLUSHDB'  => '',
 	'FLUSHALL' => '',
 	'AUTH'     => '',
+	'INFO'     => '',
 ];
 
 // debug mode - you don't want to set this!

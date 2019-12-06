@@ -46,6 +46,11 @@ if (isset($command['AUTH']) && !is_null($command['AUTH']) && !empty($command['AU
 {
 	$AUTH = $command['AUTH'];
 }
+$INFO = 'INFO';
+if (isset($command['INFO']) && !is_null($command['INFO']) && !empty($command['INFO']))
+{
+	$INFO = $command['INFO'];
+}
 
 $server = 0;
 if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
@@ -80,7 +85,7 @@ if (!$fp) {
 		}
 		$command = "$AUTH $credentials\r\n";
 	}
-	$command .= "INFO\r\nQUIT\r\n";
+	$command .= "$INFO\r\nQUIT\r\n";
 
 	fwrite($fp, $command);
 	while (!feof($fp)) {
@@ -95,10 +100,10 @@ if (!$data && !$error)
 	$error = "No data is available.<br>Maybe a password is required to access the database or the password is wrong.";
 }
 
-$err1 = '-ERR unknown command `AUTH`';
-if (is_array($data) && !empty($data) && substr(array_keys($data)[0], 0, strlen($err1)) === $err1)
+$err = '-ERR unknown command';
+if (is_array($data) && !empty($data) && substr(array_keys($data)[0], 0, strlen($err)) === $err)
 {
-	$error = "Command AUTH has been renamed on the server.";
+	$error = "Command AUTH or INFO has been renamed on the server.";
 }
 
 debug($data);
