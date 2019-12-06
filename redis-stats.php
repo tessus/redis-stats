@@ -41,6 +41,12 @@ if (!defined('CONFIRM_FLUSHALL'))
 	define("CONFIRM_FLUSHALL", true);
 }
 
+$AUTH = 'AUTH';
+if (isset($command['AUTH']) && !is_null($command['AUTH']) && !empty($command['AUTH']))
+{
+	$AUTH = $command['AUTH'];
+}
+
 $server = 0;
 if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
 	$server = intval($_GET['s']);
@@ -72,7 +78,7 @@ if (!$fp) {
 		{
 			$credentials = $pwdEntry;
 		}
-		$command = "AUTH $credentials\r\n";
+		$command = "$AUTH $credentials\r\n";
 	}
 	$command .= "INFO\r\nQUIT\r\n";
 
@@ -87,6 +93,12 @@ if (!$fp) {
 if (!$data && !$error)
 {
 	$error = "No data is available.<br>Maybe a password is required to access the database or the password is wrong.";
+}
+
+$err1 = '-ERR unknown command `AUTH`';
+if (is_array($data) && !empty($data) && substr(array_keys($data)[0], 0, strlen($err1)) === $err1)
+{
+	$error = "Command AUTH has been renamed on the server.";
 }
 
 debug($data);

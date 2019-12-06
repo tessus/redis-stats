@@ -37,6 +37,11 @@ if (isset($command['FLUSHALL']) && !is_null($command['FLUSHALL']) && !empty($com
 {
 	$FLUSHALL = $command['FLUSHALL'];
 }
+$AUTH = 'AUTH';
+if (isset($command['AUTH']) && !is_null($command['AUTH']) && !empty($command['AUTH']))
+{
+	$AUTH = $command['AUTH'];
+}
 
 $error = null;
 
@@ -65,7 +70,7 @@ if (!$fp) {
 		{
 			$credentials = $pwdEntry;
 		}
-		$command = "AUTH $credentials\r\n";
+		$command = "$AUTH $credentials\r\n";
 	}
 	if ($async) // we want async flush
 	{

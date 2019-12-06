@@ -34,6 +34,7 @@ define("CONFIRM_FLUSHALL", true);
 $command = [
 	'FLUSHDB'  => '',
 	'FLUSHALL' => '',
+	'AUTH'     => '',
 ];
 
 // debug mode - you don't want to set this!
