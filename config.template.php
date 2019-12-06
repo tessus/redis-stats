@@ -30,7 +30,7 @@ define("FLUSHALL", true);
 // Ask for confirmation before flushing the entire instance
 define("CONFIRM_FLUSHALL", true);
 
-// Command Masking
+// Command Mapping
 $command = [
 	'FLUSHDB'  => '',
 	'FLUSHALL' => '',
