@@ -1,5 +1,5 @@
 <?php
-// CONFIG
+// CONFIG: config.php
 
 /*
 	Servers are defined as an array
