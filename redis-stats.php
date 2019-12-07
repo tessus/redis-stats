@@ -62,7 +62,9 @@ $error = null;
 
 $fp = @fsockopen($servers[$server][1], $servers[$server][2], $errno, $errstr, 30);
 
-$data = array();
+$data    = [];
+$section = '';
+$details = [];
 
 if (!$fp) {
 	$error = $errstr;
@@ -91,8 +93,17 @@ if (!$fp) {
 	fwrite($fp, $command);
 	while (!feof($fp)) {
 		$info = explode(':', trim(fgets($fp)), 2);
-		if (isset($info[1])) $data[$info[0]] = $info[1];
+		if (isset($info[0]) && substr($info[0], 0, 2) === '# ')
+		{
+			$section = substr($info[0], 2);
+		}
+		if (isset($info[1]))
+		{
+			$data[$info[0]]              = $info[1];
+			$details[$section][$info[0]] = $info[1];
+		}
 	}
+	$section = '';
 	fclose($fp);
 }
 
@@ -107,7 +118,7 @@ if (is_array($data) && !empty($data) && substr(array_keys($data)[0], 0, strlen($
 	$error = "Command AUTH or INFO has been renamed on the server.";
 }
 
-debug($data);
+debug($details);
 
 $getDbIndex = function($db)
 {
@@ -263,6 +274,15 @@ form {
 	font-size: 1.15em;
 	background: #E2E4EF;
 	border-top: 2px solid #4F5B93;
+	border-bottom: 1px solid #C4C9DF;
+}
+
+.box h3 {
+	margin: 0.5em 0 0.5em;
+	padding: 2px 0 2px 0;
+	font-size: 1.05em;
+	background: #E2E4EF;
+	border-top: 1px solid #C4C9DF;
 	border-bottom: 1px solid #C4C9DF;
 }
 
@@ -653,12 +673,16 @@ if ($error)
 	<div class="details">
 
 	<?php
-	foreach ($data as $key => $value)
+	foreach ($details as $section => $ddata)
 	{
-		echo '<div class="detail">'."\n";
-		echo '<span class="key">' . $key.':' . '</span>'."\n";
-		echo '<span>' . $value . '</span>'."\n";
-		echo "</div>\n";
+		echo "<h3>$section</h3>\n";
+		foreach ($ddata as $key => $value)
+		{
+			echo '<div class="detail">'."\n";
+			echo '<span class="key">' . $key.':' . '</span>'."\n";
+			echo '<span>' . $value . '</span>'."\n";
+			echo "</div>\n";
+		}
 	}
 	?>
 
