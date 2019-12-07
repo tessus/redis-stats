@@ -27,8 +27,8 @@ cp config.template.php config.php
 Servers are defined as an array. There are a few examples in the `config.template.php` file.
 
 Field     | Type          | Description
-----------|---------------|-----------------------------------------------
-Name      | string        | name shown in drop-down list
+----------|---------------|------------------------------------------------------------------
+Name      | string        | name shown in drop-down list (also used for command mapping)
 IP/Socket | string        | IP address or socket (`unix://`) of the server
 Port      | integer       | port of server, use -1 for socket
 Password  | string, array | credentials for the server (optional)<br>string: `password`<br>array: `['user', 'password']` for Redis ACLs
@@ -47,7 +47,7 @@ $servers = [
 ### Misc options (boolean)
 
 Name             | Default   | Description
------------------|-----------|-----------------------------------------
+-----------------|-----------|---------------------------------------------------------------
 FLUSHDB          | true      | Show a 'Flush' button for databases
 CONFIRM_FLUSHDB  | true      | Ask for confirmation before flushing database
 FLUSHALL         | true      | Show a 'Flush All' button for the instance
@@ -62,9 +62,12 @@ e.g.:
 
 ```
 $command = [
-	'FLUSHDB'  => 'fdb-5dea06694ff64',
-	'FLUSHALL' => 'fa-5dea067c9bbd6',
-	'AUTH'     => '',
+	'Local'    => [         // must be a server name (first field in server array, name shown in drop-down list)
+		'FLUSHDB'  => 'fdb-5dea06694ff64',
+		'FLUSHALL' => 'fa-5dea067c9bbd6',
+		'AUTH'     => '',
+		'INFO'     => '',
+	],
 ];
 ```
 

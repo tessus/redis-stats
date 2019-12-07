@@ -5,7 +5,7 @@
 	Servers are defined as an array
 	[ Name, IP/Socket, Port, Password ]
 
-	Name (string):                     name shown in drop-down list
+	Name (string):                     name shown in drop-down list (also used for command mapping)
 	IP/Socket (string):                IP address or socket of the server
 	Port (integer):                    port of server, use -1 for socket
 	Password entry (string|array):     credentials for the server (optional)
@@ -32,10 +32,12 @@ define("CONFIRM_FLUSHALL", true);
 
 // Command Mapping
 $command = [
-	'FLUSHDB'  => '',
-	'FLUSHALL' => '',
-	'AUTH'     => '',
-	'INFO'     => '',
+	'Local'    => [         // must be a server name (first field in server array, name shown in drop-down list)
+		'FLUSHDB'  => '',
+		'FLUSHALL' => '',
+		'AUTH'     => '',
+		'INFO'     => '',
+	],
 ];
 
 // debug mode - you don't want to set this!

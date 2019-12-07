@@ -16,9 +16,16 @@ if (!$servers)
 	die("No servers in config found.");
 }
 
+// Default debug setting
+if (!defined('DEBUG'))
+{
+	define("DEBUG", false);
+}
+
 $server = 0;
 if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
 	$server = intval($_GET['s']);
+	$serverName = $servers[$server][0];
 }
 if (isset($_GET['db'])) {
 	$db = intval($_GET['db']);
@@ -28,19 +35,19 @@ if (isset($_GET['async'])) {
 }
 
 $FLUSHDB = 'FLUSHDB';
-if (isset($command['FLUSHDB']) && !is_null($command['FLUSHDB']) && !empty($command['FLUSHDB']))
+if (isset($command[$serverName]['FLUSHDB']) && !is_null($command[$serverName]['FLUSHDB']) && !empty($command[$serverName]['FLUSHDB']))
 {
-	$FLUSHDB = $command['FLUSHDB'];
+	$FLUSHDB = $command[$serverName]['FLUSHDB'];
 }
 $FLUSHALL = 'FLUSHALL';
-if (isset($command['FLUSHALL']) && !is_null($command['FLUSHALL']) && !empty($command['FLUSHALL']))
+if (isset($command[$serverName]['FLUSHALL']) && !is_null($command[$serverName]['FLUSHALL']) && !empty($command[$serverName]['FLUSHALL']))
 {
-	$FLUSHALL = $command['FLUSHALL'];
+	$FLUSHALL = $command[$serverName]['FLUSHALL'];
 }
 $AUTH = 'AUTH';
-if (isset($command['AUTH']) && !is_null($command['AUTH']) && !empty($command['AUTH']))
+if (isset($command[$serverName]['AUTH']) && !is_null($command[$serverName]['AUTH']) && !empty($command[$serverName]['AUTH']))
 {
-	$AUTH = $command['AUTH'];
+	$AUTH = $command[$serverName]['AUTH'];
 }
 
 $error = null;

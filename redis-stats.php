@@ -41,20 +41,21 @@ if (!defined('CONFIRM_FLUSHALL'))
 	define("CONFIRM_FLUSHALL", true);
 }
 
-$AUTH = 'AUTH';
-if (isset($command['AUTH']) && !is_null($command['AUTH']) && !empty($command['AUTH']))
-{
-	$AUTH = $command['AUTH'];
-}
-$INFO = 'INFO';
-if (isset($command['INFO']) && !is_null($command['INFO']) && !empty($command['INFO']))
-{
-	$INFO = $command['INFO'];
-}
-
 $server = 0;
 if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
 	$server = intval($_GET['s']);
+	$serverName = $servers[$server][0];
+}
+
+$AUTH = 'AUTH';
+if (isset($command[$serverName]['AUTH']) && !is_null($command[$serverName]['AUTH']) && !empty($command[$serverName]['AUTH']))
+{
+	$AUTH = $command[$serverName]['AUTH'];
+}
+$INFO = 'INFO';
+if (isset($command[$serverName]['INFO']) && !is_null($command[$serverName]['INFO']) && !empty($command[$serverName]['INFO']))
+{
+	$INFO = $command[$serverName]['INFO'];
 }
 
 $error = null;
