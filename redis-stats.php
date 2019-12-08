@@ -6,9 +6,9 @@ $id = bin2hex(random_bytes(16));
 $_SESSION['id'] = $id;
 
 // Default config
-$servers = array(
-	array('Local', '127.0.0.1', 6379),
-);
+$servers = [
+	[ 'Local', '127.0.0.1', 6379 ],
+];
 
 if (file_exists(dirname(__FILE__)."/config.php"))
 {
@@ -41,12 +41,15 @@ if (!defined('CONFIRM_FLUSHALL'))
 	define("CONFIRM_FLUSHALL", true);
 }
 
+// Process GET request
 $server = 0;
-if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
+if (isset($_GET['s']) && intval($_GET['s']) < count($servers))
+{
 	$server = intval($_GET['s']);
 }
 $serverName = $servers[$server][0];
 
+// Command mapping
 $AUTH = 'AUTH';
 if (isset($command[$serverName]['AUTH']) && !is_null($command[$serverName]['AUTH']) && !empty($command[$serverName]['AUTH']))
 {
@@ -58,6 +61,7 @@ if (isset($command[$serverName]['INFO']) && !is_null($command[$serverName]['INFO
 	$INFO = $command[$serverName]['INFO'];
 }
 
+// Talk to Redis server
 $error = null;
 
 $fp = @fsockopen($servers[$server][1], $servers[$server][2], $errno, $errstr, 30);
@@ -66,10 +70,13 @@ $data    = [];
 $section = '';
 $details = [];
 
-if (!$fp) {
+if (!$fp)
+{
 	$error = $errstr;
-} else {
-	$command = '';
+}
+else
+{
+	$redisCommand = '';
 
 	isset($servers[$server][3]) ? $pwdEntry = $servers[$server][3] : $pwdEntry = null;
 	if (!is_null($pwdEntry) && !empty($pwdEntry))
@@ -86,12 +93,13 @@ if (!$fp) {
 		{
 			$credentials = $pwdEntry;
 		}
-		$command = "$AUTH $credentials\r\n";
+		$redisCommand = "$AUTH $credentials\r\n";
 	}
-	$command .= "$INFO\r\nQUIT\r\n";
+	$redisCommand .= "$INFO\r\nQUIT\r\n";
 
-	fwrite($fp, $command);
-	while (!feof($fp)) {
+	fwrite($fp, $redisCommand);
+	while (!feof($fp))
+	{
 		$info = explode(':', trim(fgets($fp)), 2);
 		if (isset($info[0]) && substr($info[0], 0, 2) === '# ')
 		{
@@ -118,27 +126,31 @@ if (is_array($data) && !empty($data) && substr(array_keys($data)[0], 0, strlen($
 	$error = "Command AUTH or INFO has been renamed on the server.";
 }
 
+debug($data);
 debug($details);
 
+// get a list of active databases
 $getDbIndex = function($db)
 {
 	return (int) substr($db, 2);
 };
 $redisDatabases = array_values(array_map($getDbIndex, preg_grep("/^db[0-9]+$/", array_keys($data))));
 
-function time_elapsed($secs) {
+function time_elapsed($secs)
+{
 	if (!$secs) return;
-	$bit = array(
+	$bit = [
 		' year'      => $secs / 31556926 % 12,
 		' week'      => $secs / 604800 % 52,
 		' day'       => $secs / 86400 % 7,
 		' hour'      => $secs / 3600 % 24,
 		' minute'    => $secs / 60 % 60,
 		' second'    => $secs % 60,
-	);
+	];
 
-	foreach ($bit as $k => $v){
-		if($v > 1) $ret[] = $v . $k . 's';
+	foreach ($bit as $k => $v)
+	{
+		if($v > 1)  $ret[] = $v . $k . 's';
 		if($v == 1) $ret[] = $v . $k;
 	}
 	if (count($ret) > 1)
@@ -545,7 +557,8 @@ if ($error)
 		<button id="refreshbutton" onclick="location.reload();">Refresh</button>
 
 		<?php
-		if (FLUSHDB === true || FLUSHALL === true) {
+		if (FLUSHDB === true || FLUSHALL === true)
+		{
 			echo '<input type="checkbox" id="checkboxasync" onclick="toggleAsync();"> flush async';
 		}
 		?>
@@ -643,7 +656,8 @@ if ($error)
 		<div class="key">
 		<?php
 			$values = explode(',', $data["db$i"]);
-			foreach ($values as $value) {
+			foreach ($values as $value)
+			{
 				debug($value, false);
 				$kv = explode('=', $value, 2);
 				$keyData[$kv[0]] = $kv[1];
@@ -652,7 +666,7 @@ if ($error)
 		?>
 		</div>
 		<?php if(FLUSHDB === true) { ?>
-		<button class="flushButton" id="flush<?php echo "$i" ?>" style="width: 100px;" value="<?php echo "$i" ?>" onclick="flushDB(<?php echo "$server" ?>,value);">Flush</button>
+		<button class="flushButton" id="flush<?php echo "$i" ?>" style="width: 100px;" value="<?php echo "$i" ?>" onclick="flushDB(<?php echo "$server" ?>, value);">Flush</button>
 		<?php } ?>
 	</div>
 <?php } ?>
@@ -660,7 +674,7 @@ if ($error)
 
 <?php if(FLUSHALL === true) { ?>
 <div>
-<button id="flushall" style="width: 150px;" onclick="flushDB(<?php echo "$server" ?>,-1);">FLUSH ALL</button>
+<button id="flushall" style="width: 150px;" onclick="flushDB(<?php echo "$server" ?>, -1);">FLUSH ALL</button>
 </div>
 <?php } ?>
 

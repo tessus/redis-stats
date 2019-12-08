@@ -22,18 +22,23 @@ if (!defined('DEBUG'))
 	define("DEBUG", false);
 }
 
+// Process GET request
 $server = 0;
-if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
+if (isset($_GET['s']) && intval($_GET['s']) < count($servers))
+{
 	$server = intval($_GET['s']);
 }
 $serverName = $servers[$server][0];
-if (isset($_GET['db'])) {
+if (isset($_GET['db']))
+{
 	$db = intval($_GET['db']);
 }
-if (isset($_GET['async'])) {
+if (isset($_GET['async']))
+{
 	$async = intval($_GET['async']);
 }
 
+// Command mapping
 $FLUSHDB = 'FLUSHDB';
 if (isset($command[$serverName]['FLUSHDB']) && !is_null($command[$serverName]['FLUSHDB']) && !empty($command[$serverName]['FLUSHDB']))
 {
@@ -50,17 +55,21 @@ if (isset($command[$serverName]['AUTH']) && !is_null($command[$serverName]['AUTH
 	$AUTH = $command[$serverName]['AUTH'];
 }
 
+// Talk to Redis server
 $error = null;
 
 $fp = @fsockopen($servers[$server][1], $servers[$server][2], $errno, $errstr, 30);
 
 $info = array();
 
-if (!$fp) {
+if (!$fp)
+{
 	die($errstr);
-} else {
-	$command = '';
-	$ASYNC   = '';
+}
+else
+{
+	$redisCommand = '';
+	$ASYNC        = '';
 
 	isset($servers[$server][3]) ? $pwdEntry = $servers[$server][3] : $pwdEntry = null;
 	if (!is_null($pwdEntry) && !empty($pwdEntry))
@@ -77,7 +86,7 @@ if (!$fp) {
 		{
 			$credentials = $pwdEntry;
 		}
-		$command = "$AUTH $credentials\r\n";
+		$redisCommand = "$AUTH $credentials\r\n";
 	}
 	if ($async) // we want async flush
 	{
@@ -85,15 +94,16 @@ if (!$fp) {
 	}
 	if ($db != -1) // one specific database
 	{
-		$command .= "SELECT $db\r\n$FLUSHDB$ASYNC\r\nQUIT\r\n";
+		$redisCommand .= "SELECT $db\r\n$FLUSHDB$ASYNC\r\nQUIT\r\n";
 	}
 	else // entire instance
 	{
-		$command .= "$FLUSHALL$ASYNC\r\nQUIT\r\n";
+		$redisCommand .= "$FLUSHALL$ASYNC\r\nQUIT\r\n";
 	}
 
-	fwrite($fp, $command);
-	while (!feof($fp)) {
+	fwrite($fp, $redisCommand);
+	while (!feof($fp))
+	{
 		$info[] = trim(fgets($fp));
 	}
 	fclose($fp);
@@ -108,7 +118,7 @@ else
 {
 	if (DEBUG === true)
 	{
-		var_dump($command);
+		var_dump($redisCommand);
 		var_dump($info);
 	}
 	foreach ($info as $v)
