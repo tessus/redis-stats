@@ -44,8 +44,8 @@ if (!defined('CONFIRM_FLUSHALL'))
 $server = 0;
 if (isset($_GET['s']) && intval($_GET['s']) < count($servers)) {
 	$server = intval($_GET['s']);
-	$serverName = $servers[$server][0];
 }
+$serverName = $servers[$server][0];
 
 $AUTH = 'AUTH';
 if (isset($command[$serverName]['AUTH']) && !is_null($command[$serverName]['AUTH']) && !empty($command[$serverName]['AUTH']))
