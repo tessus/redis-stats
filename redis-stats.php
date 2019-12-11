@@ -549,7 +549,7 @@ if ($error)
 
 <div class="grid">   <!-- Top Menu  -->
 	<div class="menu1">
-		Refresh Rate: <input type="text" id="rate" value="2" size="5" onkeyup="myInputTest()"> <button id="play" onclick="playpause();">Play</button>
+		Refresh Rate: <input type="text" id="rate" value="2" size="5" onkeyup="myInputTest()"> <button id="play" style="width: 55px;" onclick="playpause();">Play</button>
 	</div>
 
 	<div class="menu2">
