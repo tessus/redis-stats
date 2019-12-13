@@ -338,6 +338,29 @@ form {
 	z-index: 1;
 	line-height: 1;
 }
+
+footer {
+	padding: 1em 1em;
+}
+footer a {
+	padding: 2.2em;
+	text-decoration: none;
+	opacity: 0.7;
+	color: #22242F;
+}
+footer a:hover {
+	opacity: 1;
+}
+footer > a {
+	background-position: 5px 50%;
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+footer > a {
+	background-position: 0 50%;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAcCAYAAAB75n/uAAAABmJLR0QA/wD/AP+gvaeTAAAByUlEQVRIid3VsWsUURDH8Y9rDJyVSeedUSGlVVJYi1YiRghqJSj2wTR2Fv4F2qoIglrZiUkqBSOC/4ClaEAhxRnRoI1nchb7lixzu7ncXaUDU8yb2e/vvXnLPP5129cnP4ULOIfjKYbPWMMSnuPLoMIt3EcH3T6+hWc4tlf4HDb3AI6+ifP94AtpR4PCy6dZqIOfxZ8R4GWRuQhvhbbcQQPX5ZfZxTreJ19Pa2uppoG7oV3NssDDsIurpVwjFidrplxh1wLjQZGYqmjNYgWwny0GRgdHMvl/vj8UfxxC4FOIxxLbSlB+OQS8sFeBtZxhOhQtjSCwHOLpDIfD4sYIAu0QNzO9/Z8YQWAyxFmGr2FxZgSB2RC3yftWvpgNHBoCPoFvgfUiw+tQOIl7yAaAZ+mb2N5V8jFRjOV3dsbAG5zSe0dlG8NpvA077+K30gR4mhZX5H1cLRX+xM0K+C38qgAX/rhc3MSPlHiEk/hgZzqeqBCY3QX+XcX8uoRt+VyawVGcqYHDwRr4Fi7WfONGEmnjNi7jiuoLP1ADr31wyicp2lX4eEXduN621O48WlN+8Z10ojqBbfnf8kT1m9HXWpjfJT+fav5j+wtaock1qj7sygAAAABJRU5ErkJggg==');
+	font-size: 90%;
+}
  </style>
  <script>
  (function() {
@@ -543,7 +566,7 @@ window.createPie = createPie;
 <?php
 if ($error)
 {
-	die($error."\n</div>\n</body>\n</html>\n");
+	die($error."\n</div>\n<footer><a href=\"https://github.com/tessus/redis-stats\" target=\"_blank\">https://github.com/tessus/redis-stats</a></footer>\n</body>\n</html>\n");
 }
 ?>
 
@@ -704,6 +727,9 @@ if ($error)
 </div>
 
 </div>   <!-- Wrapper  -->
+<footer>
+	<a href="https://github.com/tessus/redis-stats" target="_blank">https://github.com/tessus/redis-stats</a>
+</footer>
 <script>
 var rate  = 0;
 var play  = 0;
