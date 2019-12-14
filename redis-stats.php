@@ -361,16 +361,16 @@ footer > a {
 	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAcCAYAAAB75n/uAAAABmJLR0QA/wD/AP+gvaeTAAAByUlEQVRIid3VsWsUURDH8Y9rDJyVSeedUSGlVVJYi1YiRghqJSj2wTR2Fv4F2qoIglrZiUkqBSOC/4ClaEAhxRnRoI1nchb7lixzu7ncXaUDU8yb2e/vvXnLPP5129cnP4ULOIfjKYbPWMMSnuPLoMIt3EcH3T6+hWc4tlf4HDb3AI6+ifP94AtpR4PCy6dZqIOfxZ8R4GWRuQhvhbbcQQPX5ZfZxTreJ19Pa2uppoG7oV3NssDDsIurpVwjFidrplxh1wLjQZGYqmjNYgWwny0GRgdHMvl/vj8UfxxC4FOIxxLbSlB+OQS8sFeBtZxhOhQtjSCwHOLpDIfD4sYIAu0QNzO9/Z8YQWAyxFmGr2FxZgSB2RC3yftWvpgNHBoCPoFvgfUiw+tQOIl7yAaAZ+mb2N5V8jFRjOV3dsbAG5zSe0dlG8NpvA077+K30gR4mhZX5H1cLRX+xM0K+C38qgAX/rhc3MSPlHiEk/hgZzqeqBCY3QX+XcX8uoRt+VyawVGcqYHDwRr4Fi7WfONGEmnjNi7jiuoLP1ADr31wyicp2lX4eEXduN621O48WlN+8Z10ojqBbfnf8kT1m9HXWpjfJT+fav5j+wtaock1qj7sygAAAABJRU5ErkJggg==');
 	font-size: 90%;
 }
- </style>
- <script>
- (function() {
- var ce = function(name) {
+</style>
+<script>
+(function() {
+	var ce = function(name) {
 		return document.createElement(name);
 	},
 	DIV = "div",
 	PX = "px";
 
- function setStyle(elem, key, value) {
+function setStyle(elem, key, value) {
 	var style = elem.style,
 		styles, i;
 
@@ -386,9 +386,9 @@ footer > a {
 	}
 
 	return elem;
- }
+}
 
- function createSlice(sizeNum) {
+function createSlice(sizeNum) {
 	var newSlice = ce(DIV),
 		pieSize = sizeNum + PX;
 
@@ -405,9 +405,9 @@ footer > a {
 	});
 
 	return newSlice;
- }
+}
 
- function createPieSlice(sizeNum, color) {
+function createPieSlice(sizeNum, color) {
 	var pie = ce(DIV),
 		pieSize = sizeNum + PX;
 
@@ -425,9 +425,9 @@ footer > a {
 	});
 
 	return pie;
- }
+}
 
- function createPie(pieSize, pieces, baseColor, pieName){
+function createPie(pieSize, pieces, baseColor, pieName){
 	var sizeNum = parseFloat(pieSize.replace(PX, "")),
 		numberOfSlices = pieces.length,
 
