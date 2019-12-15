@@ -19,6 +19,8 @@ if (!$servers)
 	die("No servers in config found.");
 }
 
+define("URL", "https://github.com/tessus/redis-stats");
+
 // Default settings
 if (!defined('DEBUG'))
 {
@@ -566,7 +568,7 @@ window.createPie = createPie;
 <?php
 if ($error)
 {
-	die($error."\n</div>\n<footer><a href=\"https://github.com/tessus/redis-stats\" target=\"_blank\">https://github.com/tessus/redis-stats</a></footer>\n</body>\n</html>\n");
+	die($error . "\n</div>\n<footer><a href=\"" . URL . "\" target=\"_blank\">" . URL. "</a></footer>\n</body>\n</html>\n");
 }
 ?>
 
@@ -728,7 +730,7 @@ if ($error)
 
 </div>   <!-- Wrapper  -->
 <footer>
-	<a href="https://github.com/tessus/redis-stats" target="_blank">https://github.com/tessus/redis-stats</a>
+	<a href="<?php echo URL; ?>" target="_blank"><?php echo URL; ?></a>
 </footer>
 <script>
 var rate  = 0;
