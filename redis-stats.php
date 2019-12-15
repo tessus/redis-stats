@@ -150,8 +150,8 @@ function time_elapsed($secs)
 
 	foreach ($bit as $k => $v)
 	{
-		if($v > 1)  $ret[] = $v . $k . 's';
-		if($v == 1) $ret[] = $v . $k;
+		if ($v > 1)  $ret[] = $v . $k . 's';
+		if ($v == 1) $ret[] = $v . $k;
 	}
 	if (count($ret) > 1)
 	{
@@ -688,14 +688,14 @@ if ($error)
 			echo $keyData['keys'];
 		?>
 		</div>
-		<?php if(FLUSHDB === true) { ?>
+		<?php if (FLUSHDB === true) { ?>
 		<button class="flushButton" id="flush<?php echo "$i" ?>" style="width: 100px;" value="<?php echo "$i" ?>" onclick="flushDB(<?php echo "$server" ?>, value);">Flush</button>
 		<?php } ?>
 	</div>
 <?php } ?>
 </div>
 
-<?php if(FLUSHALL === true) { ?>
+<?php if (FLUSHALL === true) { ?>
 <div>
 <button id="flushall" style="width: 150px;" onclick="flushDB(<?php echo "$server" ?>, -1);">FLUSH ALL</button>
 </div>
@@ -812,12 +812,12 @@ function initRedisInfo() {
 
 function flushDB(server, db) {
 	if ((db == -1) && CONFIRM_FLUSHALL) {
-		if(!confirm("This will flush the entire Redis instance.\n\nAre you sure?")) {
+		if (!confirm("This will flush the entire Redis instance.\n\nAre you sure?")) {
 			return;
 		}
 	}
 	if (CONFIRM_FLUSHDB) {
-		if(!confirm("This will flush db"+db+"\n\nAre you sure?")) {
+		if (!confirm("This will flush db"+db+"\n\nAre you sure?")) {
 			return;
 		}
 	}
