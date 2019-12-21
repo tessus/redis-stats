@@ -42,6 +42,10 @@ if (!defined('CONFIRM_FLUSHALL'))
 {
 	define("CONFIRM_FLUSHALL", true);
 }
+if (!defined('STATUS_LINE'))
+{
+	define("STATUS_LINE", "bottom");
+}
 
 // Process GET request
 $server = 0;
@@ -590,6 +594,12 @@ if ($error)
 	</div>
 </div>   <!-- Top Menu  -->
 
+<?php if (STATUS_LINE === 'top') { ?>
+<div id="msg" class='boxmsg col3' style="visibility: hidden;">
+&nbsp;
+</div>
+<?php } ?>
+
 <div class="grid">
 <div class='box col2'>
 	<h2>Hits</h2>
@@ -703,9 +713,11 @@ if ($error)
 </div>
 <?php } ?>
 
+<?php if (STATUS_LINE !== 'top') { ?>
 <div id="msg" class='boxmsg col3' style="visibility: hidden;">
 &nbsp;
 </div>
+<?php } ?>
 <br>
 <div id="allinfo" style="display: none;" class='box col3'>
 	<h2>Details</h2>

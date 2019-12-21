@@ -44,7 +44,7 @@ $servers = [
 ];
 ```
 
-### Misc options (boolean)
+### Misc options
 
 Name             | Default   | Description
 -----------------|-----------|---------------------------------------------------------------
@@ -52,6 +52,7 @@ FLUSHDB          | true      | Show a 'Flush' button for databases
 CONFIRM_FLUSHDB  | true      | Ask for confirmation before flushing database
 FLUSHALL         | true      | Show a 'Flush All' button for the instance
 CONFIRM_FLUSHALL | true      | Ask for confirmation before flushing the entire instance
+STATUS_LINE      | "bottom"  | Position of status line: "bottom" or "top"
 DEBUG            | false     | debug mode - you don't want to set this to true!
 
 ### Command mapping

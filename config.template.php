@@ -30,6 +30,9 @@ define("FLUSHALL", true);
 // Ask for confirmation before flushing the entire instance
 define("CONFIRM_FLUSHALL", true);
 
+// Position of status line: "bottom" or "top"
+define("STATUS_LINE", "bottom");
+
 // Command Mapping
 $command = [
 	'Local'    => [         // must be a server name (first field in server array, name shown in drop-down list)
