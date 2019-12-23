@@ -20,6 +20,9 @@ if (!$servers)
 }
 
 define("URL", "https://github.com/tessus/redis-stats");
+define("UPDATE_URL", "https://raw.githubusercontent.com/tessus/redis-stats/master/VERSION");
+
+$_SESSION['updateURL'] = UPDATE_URL;
 
 // Default settings
 if (!defined('DEBUG'))
@@ -42,10 +45,18 @@ if (!defined('CONFIRM_FLUSHALL'))
 {
 	define("CONFIRM_FLUSHALL", true);
 }
+if (!defined('CHECK_FOR_UPDATE'))
+{
+	define("CHECK_FOR_UPDATE", true);
+}
 if (!defined('STATUS_LINE'))
 {
 	define("STATUS_LINE", "bottom");
 }
+
+// Get local version
+$localVersion = trim(@file_get_contents('./VERSION'));
+$_SESSION['localVersion'] = $localVersion;
 
 // Process GET request
 $server = 0;
@@ -204,6 +215,7 @@ h1 {
 	padding: 0.25em;
 	margin-top: 0;
 	color: #22242F;
+	text-align: center;
 }
 
 button {
@@ -276,6 +288,16 @@ form {
 	display: inline-block;
 	border: 1px solid #ccc;
 	padding: 2px 2px 2px 2px !important;
+}
+
+.boxmsg a {
+	text-decoration: none;
+	color: #0000FF;
+}
+
+.boxmsg a:hover {
+	text-decoration: underline wavy;
+	color: #0000FF;
 }
 
 .col2 .col {
@@ -559,7 +581,10 @@ window.createPie = createPie;
 </head>
 <body onload="initRedisInfo()">
 <div class="wrapper">   <!-- Wrapper  -->
-<h1>Redis Stats</h1>
+<?php if (CHECK_FOR_UPDATE === true) { ?>
+<button id="checkbutton" style="float: right; margin: 20px 10px 20px -200px;" onclick="checkForUpdate();">Check for update</button>
+<?php } ?>
+<h1>Redis Stats <span style="font-size: 50%;"><?php echo $localVersion; ?></span></h1>
 <form method="get">
 <label for="server">Server:</label>
 <select onchange="this.form.submit()" id="server" name="s">
@@ -752,12 +777,14 @@ var doc_rate = document.getElementById("rate");
 var doc_play = document.getElementById("play");
 var doc_msg  = document.getElementById('msg');
 const errorColor   = '#F88';
+const updateColor  = '#FFF7BA';
 const successColor = '#C1FFC1';
 const defaultColor = '#E6E6E6';
 const CONFIRM_FLUSHDB = '<?php echo CONFIRM_FLUSHDB; ?>';
 const CONFIRM_FLUSHALL = '<?php echo CONFIRM_FLUSHALL; ?>';
 const FLUSHDB = '<?php echo FLUSHDB; ?>';
 const FLUSHALL = '<?php echo FLUSHALL; ?>';
+const URL = '<?php echo URL; ?>';
 
 (function() {
 var hitPie = createPie('174px',[{value: <?php echo $hitRate ?>, color: '#8892BF' }]);
@@ -822,6 +849,37 @@ function initRedisInfo() {
 		autorefresh();
 	}
 	defaultMsg();
+}
+
+function checkForUpdate() {
+	var xmlhttp = new XMLHttpRequest();
+	const req = 'check.php';
+	xmlhttp.onreadystatechange = function() {
+		if (this.readyState==4 && this.status == 200) {
+			if (this.responseText != 'Error') {
+				const response = this.responseText;
+				if (response == '0') {
+					doc_msg.style.visibility = 'visible';
+					doc_msg.style.background = successColor;
+					doc_msg.innerHTML        = 'Redis Stats is up to date.';
+					setTimeout("defaultMsg()", 5000);
+				} else {
+					const text = 'Version ' + response + ' is <a href="' + URL + '" target="_blank">available</a>.';
+					doc_msg.style.visibility = 'visible';
+					doc_msg.style.background = updateColor;
+					doc_msg.innerHTML        = text;
+					setTimeout("defaultMsg()", 10000);
+				}
+			} else {
+				doc_msg.style.visibility = 'visible';
+				doc_msg.style.background = errorColor;
+				doc_msg.innerHTML = 'Could not retrieve version information.';
+				setTimeout("defaultMsg()", 5000);
+			}
+		}
+	};
+	xmlhttp.open("GET", req, true);
+	xmlhttp.send();
 }
 
 function flushDB(server, db) {
