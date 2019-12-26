@@ -784,20 +784,23 @@ var delay = 1000;
 var doc_rate = document.getElementById("rate");
 var doc_play = document.getElementById("play");
 var doc_msg  = document.getElementById('msg');
-const errorColor   = '#F88';
-const updateColor  = '#FFF7BA';
-const successColor = '#C1FFC1';
-const defaultColor = '#E6E6E6';
-const CONFIRM_FLUSHDB = '<?php echo CONFIRM_FLUSHDB; ?>';
+const errorColor       = '#F88';
+const updateColor      = '#FFF7BA';
+const successColor     = '#C1FFC1';
+const defaultColor     = '#E6E6E6';
+const CONFIRM_FLUSHDB  = '<?php echo CONFIRM_FLUSHDB; ?>';
 const CONFIRM_FLUSHALL = '<?php echo CONFIRM_FLUSHALL; ?>';
-const FLUSHDB = '<?php echo FLUSHDB; ?>';
-const FLUSHALL = '<?php echo FLUSHALL; ?>';
-const URL = '<?php echo URL; ?>';
+const FLUSHDB          = '<?php echo FLUSHDB; ?>';
+const FLUSHALL         = '<?php echo FLUSHALL; ?>';
+const URL              = '<?php echo URL; ?>';
+const ERROR            = '<?php echo empty($error) ? false : true ?>';
 
+<?php if (!$error) { ?>
 (function() {
 var hitPie = createPie('174px',[{value: <?php echo $hitRate ?>, color: '#8892BF' }]);
 document.getElementById('hitrate').appendChild(hitPie);
 }());
+<?php } ?>
 
 function toggleDetails() {
 	var state = document.getElementById('allinfo').style.display;
@@ -841,48 +844,68 @@ function changeFlushButtons(status) {
 }
 
 function initRedisInfo() {
-	if (localStorage.getItem('redisInfoDetails') === 'true') document.getElementById('allinfo').style.display = 'inline-block';
-	if (localStorage.getItem('redisInfoFlushAsync') === 'true') {
-		changeFlushButtons(true);
-		document.getElementById("checkboxasync").checked = true;
+	if (!ERROR) {
+		if (localStorage.getItem('redisInfoDetails') === 'true') document.getElementById('allinfo').style.display = 'inline-block';
+		if (localStorage.getItem('redisInfoFlushAsync') === 'true') {
+			changeFlushButtons(true);
+			document.getElementById("checkboxasync").checked = true;
+		}
+		if (localStorage.getItem('redisInfoPlayDelay')) {
+			doc_rate.value = localStorage.getItem('redisInfoPlayDelay');
+		}
+		if (sessionStorage.getItem('redisInfoPlay') == '1') { // we are still in auto refesh mode
+			doc_rate.value = localStorage.getItem('redisInfoPlayDelay');
+			doc_rate.disabled = true;
+			doc_play.innerHTML = "Pause";
+			play = 1;
+			autorefresh();
+		}
+		defaultMsg();
 	}
-	if (localStorage.getItem('redisInfoPlayDelay')) {
-		doc_rate.value = localStorage.getItem('redisInfoPlayDelay');
-	}
-	if (sessionStorage.getItem('redisInfoPlay') == '1') { // we are still in auto refesh mode
-		doc_rate.value = localStorage.getItem('redisInfoPlayDelay');
-		doc_rate.disabled = true;
-		doc_play.innerHTML = "Pause";
-		play = 1;
-		autorefresh();
-	}
-	defaultMsg();
 }
 
 function checkForUpdate() {
 	var xmlhttp = new XMLHttpRequest();
+
 	const req = 'check.php';
 	xmlhttp.onreadystatechange = function() {
+		const curBgCol = doc_msg.style.backgroundColor;
+		const curText  = doc_msg.innerHTML;
 		if (this.readyState==4 && this.status == 200) {
 			if (this.responseText != 'Error') {
 				const response = this.responseText;
 				if (response == '0') {
-					doc_msg.style.visibility = 'visible';
-					doc_msg.style.background = successColor;
-					doc_msg.innerHTML        = 'Redis Stats is up to date.';
-					setTimeout("defaultMsg()", 5000);
+					const duration = 5000;
+					doc_msg.style.visibility      = 'visible';
+					doc_msg.style.backgroundColor = successColor;
+					doc_msg.innerHTML             = 'Redis Stats is up to date.';
+					if (!ERROR) {
+						setTimeout(function() {defaultMsg()}, duration);
+					} else {
+						setTimeout(function() {showMsg(curBgCol, curText)}, duration);
+					}
 				} else {
 					const text = 'Version ' + response + ' is <a href="' + URL + '" target="_blank">available</a>.';
-					doc_msg.style.visibility = 'visible';
-					doc_msg.style.background = updateColor;
-					doc_msg.innerHTML        = text;
-					setTimeout("defaultMsg()", 10000);
+					const duration = 10000;
+					doc_msg.style.visibility      = 'visible';
+					doc_msg.style.backgroundColor = updateColor;
+					doc_msg.innerHTML             = text;
+					if (!ERROR) {
+						setTimeout(function() {defaultMsg()}, duration);
+					} else {
+						setTimeout(function() {showMsg(curBgCol, curText)}, duration);
+					}
 				}
 			} else {
-				doc_msg.style.visibility = 'visible';
-				doc_msg.style.background = errorColor;
-				doc_msg.innerHTML = 'Could not retrieve version information.';
-				setTimeout("defaultMsg()", 5000);
+				const duration = 5000;
+				doc_msg.style.visibility      = 'visible';
+				doc_msg.style.backgroundColor = errorColor;
+				doc_msg.innerHTML             = 'Could not retrieve version information.';
+				if (!ERROR) {
+					setTimeout(function() {defaultMsg()}, duration);
+				} else {
+					setTimeout(function() {showMsg(curBgCol, curText)}, duration);
+				}
 			}
 		}
 	};
@@ -908,27 +931,27 @@ function flushDB(server, db) {
 		if (this.readyState==4 && this.status == 200) {
 			if (this.responseText == 'Success') {
 				if (db != -1) {
-					document.getElementById('flush'+db).innerHTML        = 'Flushed';
-					document.getElementById('flush'+db).style.background = successColor;
-					doc_msg.style.visibility                             = 'visible';
-					doc_msg.style.background                             = successColor;
+					document.getElementById('flush'+db).innerHTML             = 'Flushed';
+					document.getElementById('flush'+db).style.backgroundColor = successColor;
+					doc_msg.style.visibility                                  = 'visible';
+					doc_msg.style.backgroundColor                             = successColor;
 				} else {
-					document.getElementById('flushall').innerHTML        = 'ALL Flushed';
-					document.getElementById('flushall').style.background = successColor;
-					doc_msg.style.visibility                             = 'visible';
-					doc_msg.style.background                             = successColor;
+					document.getElementById('flushall').innerHTML             = 'ALL Flushed';
+					document.getElementById('flushall').style.backgroundColor = successColor;
+					doc_msg.style.visibility                                  = 'visible';
+					doc_msg.style.backgroundColor                             = successColor;
 				}
 				doc_msg.innerHTML = '+OK';
 				setTimeout("location.reload()", 2500);
 			} else {
 				if (db != -1) {
-					document.getElementById('flush'+db).style.background = errorColor;
+					document.getElementById('flush'+db).style.backgroundColor = errorColor;
 				} else {
-					document.getElementById('flushall').style.background = errorColor;
+					document.getElementById('flushall').style.backgroundColor = errorColor;
 				}
-				doc_msg.style.visibility = 'visible';
-				doc_msg.style.background = errorColor;
-				doc_msg.innerHTML = this.responseText;
+				doc_msg.style.visibility      = 'visible';
+				doc_msg.style.backgroundColor = errorColor;
+				doc_msg.innerHTML             = this.responseText;
 			}
 		}
 	};
@@ -940,9 +963,9 @@ function flushDB(server, db) {
 function autorefresh() {
 	delay = parseInt(doc_rate.value);
 	if (!delay || delay < 1) {
-		doc_msg.style.visibility = 'visible';
-		doc_msg.style.background = errorColor;
-		doc_msg.innerHTML = "Not a valid 'refresh' value.";
+		doc_msg.style.visibility      = 'visible';
+		doc_msg.style.backgroundColor = errorColor;
+		doc_msg.innerHTML             = "Not a valid 'refresh' value.";
 		return;
 	}
 	play = 1;
@@ -971,23 +994,23 @@ function callback() {
 }
 
 function inputMsgSuccess() {
-	doc_msg.style.visibility = 'hidden';
-	doc_rate.style.background = null;
-	doc_msg.innerHTML = "";
+	doc_msg.style.visibility       = 'hidden';
+	doc_rate.style.backgroundColor = null;
+	doc_msg.innerHTML              = "";
 	defaultMsg();
 }
 
 function inputMsgError() {
-	doc_msg.style.visibility = 'visible';
-	doc_msg.style.background = errorColor;
-	doc_msg.innerHTML = "Not a valid 'refresh' rate. The value must be > 0 and <= 86400.";
+	doc_msg.style.visibility      = 'visible';
+	doc_msg.style.backgroundColor = errorColor;
+	doc_msg.innerHTML             = "Not a valid 'refresh' rate. The value must be > 0 and <= 86400.";
 }
 
 function defaultMsg() {
 	if (FLUSHDB || FLUSHALL) {
 		var text = [];
-		doc_msg.style.visibility = 'visible';
-		doc_msg.style.background = defaultColor;
+		doc_msg.style.visibility      = 'visible';
+		doc_msg.style.backgroundColor = defaultColor;
 		if (FLUSHDB) {
 			text.push('confirm flushing db: ' + (CONFIRM_FLUSHDB ? 'ON' : 'OFF'));
 		}
@@ -998,6 +1021,13 @@ function defaultMsg() {
 		doc_msg.textAlign = 'center';
 		doc_msg.innerHTML = comment;
 	}
+}
+
+function showMsg(bgCol, text) {
+	doc_msg.style.visibility      = 'visible';
+	doc_msg.textAlign             = 'center';
+	doc_msg.style.backgroundColor = bgCol;
+	doc_msg.innerHTML             = text;
 }
 
 function myInputTest() {
