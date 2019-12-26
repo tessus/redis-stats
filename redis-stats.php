@@ -597,8 +597,14 @@ window.createPie = createPie;
 <?php
 if ($error)
 {
-	die($error . "\n</div>\n<footer><a href=\"" . URL . "\" target=\"_blank\">" . URL. "</a></footer>\n</body>\n</html>\n");
+	$text = '';
+	$text .= '<div id="msg" class="boxmsg col3" style="background-color: #F88;">'."\n";
+	$text .= $error."\n";
+	$text .= "</div>\n";
+	echo $text;
 }
+else
+{
 ?>
 
 <div class="grid">   <!-- Top Menu  -->
@@ -764,6 +770,8 @@ if ($error)
 
 	</div>
 </div>
+
+<?php } ?>
 
 </div>   <!-- Wrapper  -->
 <footer>
