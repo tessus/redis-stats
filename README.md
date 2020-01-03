@@ -11,6 +11,7 @@
 - flush instance (async support)
 - command mapping support (when rename-command is used on the server)
 - auto refresh
+- check for update
 
 ## Installation
 
