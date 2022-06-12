@@ -218,6 +218,12 @@ h1 {
 	text-align: center;
 }
 
+h3 {
+	position: sticky;
+	position: -webkit-sticky;
+	top: 0px;
+}
+
 button {
 	margin-top: 2px;
 	margin-bottom: 2px;
