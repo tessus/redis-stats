@@ -1,1 +1,1 @@
-redis-stats.php
+valkey-stats.php

@@ -19,8 +19,8 @@ if (!$servers)
 	die("No servers in config found.");
 }
 
-define("URL", "https://github.com/tessus/redis-stats");
-define("UPDATE_URL", "https://raw.githubusercontent.com/tessus/redis-stats/master/VERSION");
+define("URL", "https://github.com/tessus/valkey-stats");
+define("UPDATE_URL", "https://raw.githubusercontent.com/tessus/valkey-stats/master/VERSION");
 
 $_SESSION['updateURL'] = UPDATE_URL;
 
@@ -192,7 +192,7 @@ function debug($var, $pre = true)
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Redis Stats</title>
+<title>Valkey Stats</title>
 <style>
 html {
 	font-size: 16px;
@@ -590,7 +590,7 @@ window.createPie = createPie;
 <?php if (CHECK_FOR_UPDATE === true) { ?>
 <button id="checkbutton" style="float: right; margin: 20px 10px 20px -200px;" onclick="checkForUpdate();">Check for update</button>
 <?php } ?>
-<h1>Redis Stats <span style="font-size: 50%;"><?php echo $localVersion; ?></span></h1>
+<h1>Valkey Stats <span style="font-size: 50%;"><?php echo $localVersion; ?></span></h1>
 <form method="get">
 <label for="server">Server:</label>
 <select onchange="this.form.submit()" id="server" name="s">
@@ -884,7 +884,7 @@ function checkForUpdate() {
 					const duration = 5000;
 					doc_msg.style.visibility      = 'visible';
 					doc_msg.style.backgroundColor = successColor;
-					doc_msg.innerHTML             = 'Redis Stats is up to date.';
+					doc_msg.innerHTML             = 'Valkey Stats is up to date.';
 					if (!ERROR) {
 						setTimeout(function() {defaultMsg()}, duration);
 					} else {
@@ -921,7 +921,7 @@ function checkForUpdate() {
 
 function flushDB(server, db) {
 	if ((db == -1) && CONFIRM_FLUSHALL) {
-		if (!confirm("This will flush the entire Redis instance.\n\nAre you sure?")) {
+		if (!confirm("This will flush the entire Valkey instance.\n\nAre you sure?")) {
 			return;
 		}
 	}

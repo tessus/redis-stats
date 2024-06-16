@@ -1,11 +1,11 @@
-# redis-stats
+# valkey-stats
 
 ## Features
 
 - lightweight
-- no PHP redis module required
+- no PHP valkey/redis module required
 - connection via IP/port or socket
-- password support (including Redis 6 ACLs)
+- password support (including Valkey/Redis 6 ACLs)
 - show details
 - flush database (async support)
 - flush instance (async support)
@@ -16,8 +16,8 @@
 ## Installation
 
 ```
-git clone --depth 1 https://github.com/tessus/redis-stats.git
-cd redis-stats
+git clone --depth 1 https://github.com/tessus/valkey-stats.git
+cd valkey-stats
 cp config.template.php config.php
 ```
 
@@ -32,14 +32,14 @@ Field     | Type          | Description
 Name      | string        | name shown in drop-down list (also used for command mapping)
 IP/Socket | string        | IP address or socket (`unix://`) of the server
 Port      | integer       | port of server, use -1 for socket
-Password  | string, array | credentials for the server (optional)<br>string: `password`<br>array: `['user', 'password']` for Redis ACLs
+Password  | string, array | credentials for the server (optional)<br>string: `password`<br>array: `['user', 'password']` for Valkey/Redis ACLs
 
 e.g.:
 
 ```
 $servers = [
 	[ 'Local', '127.0.0.1', 6379 ],
-	[ 'Local socket', 'unix:///var/run/redis.sock', -1 ],
+	[ 'Local socket', 'unix:///var/run/valkey.sock', -1 ],
 	[ 'Local with password', '127.0.0.1', 6379, 'password_here' ],
 	[ 'Local with user and password', '127.0.0.1', 6379, ['username', 'password_here'] ],
 ];
@@ -76,9 +76,8 @@ $command = [
 
 ## Screenshot
 
-![](https://evermeet.cx/pub/img/redis-stats.png)
+![](https://evermeet.cx/pub/img/valkey-stats.png)
 
 ## Acknowledgements
 
 I found the original script at https://gist.github.com/kabel/10023961
-

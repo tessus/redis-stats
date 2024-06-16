@@ -13,7 +13,7 @@
 
 $servers = [
 	[ 'Local', '127.0.0.1', 6379 ],
-	[ 'Local socket', 'unix:///var/run/redis.sock', -1 ],
+	[ 'Local socket', 'unix:///var/run/valkey.sock', -1 ],
 	[ 'Local with password', '127.0.0.1', 6379, 'password_here' ],
 	[ 'Local with user and password', '127.0.0.1', 6379, ['username', 'password_here'] ],
 ];
